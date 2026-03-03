@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Data.Sqlite;
+namespace PasswordManager.core;
 
 public class Program
 {
