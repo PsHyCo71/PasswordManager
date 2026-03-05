@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using Microsoft.Data.Sqlite;
-namespace PasswordManager.core;
-
+using PasswordManager.Data;
+namespace PasswordManager.Core;
 public class Program
 {
     public static void Main()
     {
-        
+        DatabaseInitializer.InitializeDatabase();
     }
 }
