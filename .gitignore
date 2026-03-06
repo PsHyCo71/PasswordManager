@@ -1,3 +1,5 @@
 # compiled files
 bin/
 obj/
+# user-specific files
+passwords.db

@@ -6,6 +6,6 @@ public class Program
 {
     public static void Main()
     {
-        DbInitializer.InitializeDatabase();
+        DbPasswords.InitializeTables();
     }
 }
