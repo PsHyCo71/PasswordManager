@@ -1,0 +1,11 @@
+using System;
+using Microsoft.Data.Sqlite;
+namespace PasswordManager.Models;
+public class DbInterface
+{
+    public int Id { get; set;}
+    public string? Username { get; set;}
+    public string? Email { get; set;}
+    public string URL { get; set;} = "";    //TODO: fix nullable error
+    public string Password { get; set;} = "";   //TODO: fix nullable error
+}
