@@ -1,16 +1,15 @@
 using System.Dynamic;
 using Microsoft.Data.Sqlite;
-using PasswordManager.Models;
+using PasswordManager.Core;
+using PasswordManager.Interface;
 namespace PasswordManager.Db;
 
 public class DbRepository
 {   
     public static void InsertPassword(string? username, string? email, string url, string password)
     {
-        using var connection = new SqliteConnection("Data Source=src/db/passwords.db");
-        connection.Open();
         using var command = new SqliteCommand("INSERT INTO Passwords (Username, Email, URL, Password) " +
-                                                "VALUES (@username, @email, @url, @password)", connection);
+                                                "VALUES (@username, @email, @url, @password)", Program.connection);
         command.Parameters.AddWithValue("@username", username);
         command.Parameters.AddWithValue("@email", email);
         command.Parameters.AddWithValue("@url", url);
@@ -20,11 +19,9 @@ public class DbRepository
 
     public static void UpdatePassword(int id, string? username, string? email, string url, string password)
     {
-        using var connection = new SqliteConnection("Data Source=src/db/passwords.db");
-        connection.Open();
         using var command = new SqliteCommand("UPDATE Passwords " +
                                                 "SET Username = @username, Email = @email, URL = @url, Password = @password " +
-                                                "WHERE Id = @id", connection);
+                                                "WHERE Id = @id", Program.connection);
         command.Parameters.AddWithValue("@id", id);
         command.Parameters.AddWithValue("@username", username);
         command.Parameters.AddWithValue("@email", email);
@@ -35,22 +32,18 @@ public class DbRepository
 
     public static void DeletePassword(int id)
     {
-        using var connection = new SqliteConnection("Data Source=src/db/passwords.db");
-        connection.Open();
         using var command = new SqliteCommand("DELETE FROM Passwords " +
-                                                "WHERE Id = @id", connection);
+                                                "WHERE Id = @id", Program.connection);
         command.Parameters.AddWithValue("@id", id);
         command.ExecuteNonQuery();
     }
 
     public static List<DbInterface> SelectPassword(string search)
     {
-        using var connection = new SqliteConnection("Data Source=src/db/passwords.db");
-        connection.Open();
         using var command = new SqliteCommand("SELECT * FROM Passwords " +
                                                 "WHERE URL LIKE @search " +
                                                 "OR Username LIKE @search " +
-                                                "OR Email LIKE @search", connection);
+                                                "OR Email LIKE @search", Program.connection);
         command.Parameters.AddWithValue("@search", "%"+search+"%");
         using SqliteDataReader reader = command.ExecuteReader();
 
@@ -72,9 +65,7 @@ public class DbRepository
 
     public static List<DbInterface> SelectAllPassword()
     {
-        using var connection = new SqliteConnection("Data Source=src/db/passwords.db");
-        connection.Open();
-        using var command = new SqliteCommand("SELECT * FROM Passwords ", connection);
+        using var command = new SqliteCommand("SELECT * FROM Passwords ", Program.connection);
         using SqliteDataReader reader = command.ExecuteReader();
 
         List<DbInterface> results = new List<DbInterface>();

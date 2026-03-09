@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Data.Sqlite;
+using PasswordManager.Core;
 namespace PasswordManager.Db;
 
 public class DbPasswords
@@ -12,9 +13,7 @@ public class DbPasswords
     
     public static void InitializeTablePasswords()
     {
-        using var connection = new SqliteConnection("Data Source=src/db/passwords.db");
-        connection.Open();
-        using var command = connection.CreateCommand();
+        using var command = Program.connection!.CreateCommand();
         command.CommandText = "CREATE TABLE IF NOT EXISTS Passwords (" +
                                     "Id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                                     "Username TEXT, " +
@@ -26,9 +25,7 @@ public class DbPasswords
 
     public static void InitializeTableMasterKey()
     {
-        using var connection = new SqliteConnection("Data Source=src/db/passwords.db");
-        connection.Open();
-        using var command = connection.CreateCommand();
+        using var command = Program.connection!.CreateCommand();
         command.CommandText = "CREATE TABLE IF NOT EXISTS MasterKey (" +
                                     "Id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                                     "Salt BLOB NOT NULL, " +

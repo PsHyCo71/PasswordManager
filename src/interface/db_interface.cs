@@ -1,6 +1,6 @@
 using System;
 using Microsoft.Data.Sqlite;
-namespace PasswordManager.Models;
+namespace PasswordManager.Interface;
 public class DbInterface
 {
     public int Id { get; set;}
