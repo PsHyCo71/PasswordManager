@@ -1,4 +1,5 @@
 using System;
+using System;
 using PasswordManager.Db;
 using PasswordManager.Interface;
 using PasswordManager.Services;
@@ -15,7 +16,7 @@ public class Cli
                             "4. Search password \n" +
                             "5. Show all passwords \n" +
                             "6. Exit \n" +
-                            "Select option:");
+                            "Select option: ");
         int mod = InputService.GetMode();
         ModeSelection(mod);
     }
@@ -35,6 +36,10 @@ public class Cli
                 DbRepository.UpdatePassword(id.Id, newPasswordData.Username, newPasswordData.Email, newPasswordData.URL, newPasswordData.Password);
                 Console.WriteLine("Password updated succesfully.");
                 break;
+            case 6:
+                Environment.Exit(0);
+                break;
+                
         }
     }
 }

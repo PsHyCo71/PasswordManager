@@ -1,4 +1,6 @@
 using System;
+using System.Security.Cryptography.X509Certificates;
+using PasswordManager.Db;
 using PasswordManager.Interface;
 namespace PasswordManager.Services;
 
@@ -97,5 +99,33 @@ public class InputService
             URL = url,
             Password = pw
         };
+    }
+
+    public static void SetMasterKey()
+    {
+        string password = MasterPassword.SetMasterPassword();
+        byte[] salt = MasterPasswordEncryption.GenerateSalt();
+        byte[] hash = MasterPasswordEncryption.DeriveKey(password, salt);
+        DbRepository.SaveMasterKey(salt, hash);
+    }
+
+    public static string AskMasterPassword()
+    {
+        Console.Write($"Enter master password: ");
+        string password = "";
+
+        while (true)
+        {
+            var key = Console.ReadKey(true);
+
+            if (key.Key == ConsoleKey.Enter)
+                break;
+
+            password += key.KeyChar;
+            Console.Write("*");
+        }
+
+        Console.WriteLine();
+        return password;
     }
 }

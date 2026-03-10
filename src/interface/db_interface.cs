@@ -8,4 +8,7 @@ public class DbInterface
     public string? Email { get; set;}
     public string URL { get; set;} = "";    //TODO: fix nullable error
     public string Password { get; set;} = "";   //TODO: fix nullable error
+    public byte[] Salt { get; set; } = {};
+    public byte[] Hash { get; set; } = {};
+
 }

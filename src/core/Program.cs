@@ -11,7 +11,6 @@ public class Program
         connection = new SqliteConnection("Data Source=src/db/passwords.db");
         connection.Open();
         MasterPassword.CheckFirstBoot();
-        DbPasswords.InitializeTables();
         Cli.Startup();
     }
 }
