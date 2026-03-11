@@ -4,5 +4,5 @@ namespace PasswordManager.Core;
 
 public class DbEncrypter
 {
-    
+    //TODO: .db file encryption when loaded
 }

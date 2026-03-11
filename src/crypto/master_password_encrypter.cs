@@ -15,7 +15,7 @@ public class MasterPasswordEncryption
             password,
             salt,
             100000,
-            HashAlgorithmName.SHA256,
+            HashAlgorithmName.SHA512,
             32
         );
     }
