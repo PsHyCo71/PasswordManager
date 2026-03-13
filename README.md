@@ -1,7 +1,7 @@
 # Password Manager
 
 ## Description
-A simple **passwor manager** to store your data safely in a **sqlite database**.
+A simple **password manager** to store your data safely in a **sqlite database**.
 
 ## Requirements
 - Windows 10 or later
