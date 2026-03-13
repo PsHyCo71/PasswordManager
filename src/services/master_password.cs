@@ -1,8 +1,5 @@
-using System;
-using System.ComponentModel;
-using System.Data.Common;
-using System.Security;
-using System.Text;
+using System.Security.Cryptography.X509Certificates;
+using PasswordManager.Core;
 using PasswordManager.Db;
 using PasswordManager.Services;
 
@@ -10,59 +7,41 @@ public class MasterPassword
 {
     public static string CheckFirstBoot()
     {
-        if (File.Exists("src/db/passwords.db"))
+        if (!File.Exists("src/db/passwords.db"))
         {
+            DbTables.InitializeTableMasterKey();
+            Console.WriteLine("Welcome to Password Manager! Please set a master password to secure your data.");
+            SetMasterKey();
+            Console.WriteLine($"Master password created succesfully!");
+            DbTables.InitializeTablePasswords();
             return GetMasterPassword();
         }
         else
         {
-            DbTables.InitializeTables();
-            Console.WriteLine("Welcome to Password Manager! Please set a master password to secure your data.");
-            InputService.SetMasterKey();
-            return "Master password created successfully.";
+            return GetMasterPassword();
         }
     }
 
     public static string SetMasterPassword()
     {
-        Console.Write("Enter master password: ");
+        Console.Write("Create a master password: ");
 
-        StringBuilder password = new StringBuilder();
-
-        while (true)
-        {
-            var key = Console.ReadKey(true);
-
-            if (key.Key == ConsoleKey.Enter)
-            {
-                break;
-            }
-
-            if (key.Key == ConsoleKey.Backspace)
-            {
-                if (password.Length > 0)
-                {
-                    password.Remove(password.Length - 1, 1);
-                    Console.Write("\b \b");
-                }
-                continue;
-            }
-
-            password.Append(key.KeyChar);
-            Console.Write("*");
-        }
-
-        Console.WriteLine();
-        return password.ToString();
+        string password = InputService.AskMasterPassword();
+        return password;
     }
 
     public static string GetMasterPassword()
     {
+        Console.Write($"Enter master password: ");
+        
         string password = InputService.AskMasterPassword();
 
-        var (salt, savedHash) = DbRepository.GetMasterKey();
+        byte[] salt;
+        byte[] savedHash;
+        DbRepository.GetMasterKey(out salt, out savedHash);
 
         byte[] hash = MasterPasswordEncryption.DeriveKey(password, salt);
+
 
         if (!hash.SequenceEqual(savedHash))
         {
@@ -73,5 +52,13 @@ public class MasterPassword
         {
             return "Password is correct connecting to database...";
         }
+    }
+
+    public static void SetMasterKey()
+    {
+        string password = SetMasterPassword();
+        byte[] salt = MasterPasswordEncryption.GenerateSalt();
+        byte[] hash = MasterPasswordEncryption.DeriveKey(password, salt);
+        DbRepository.SaveMasterKey(salt, hash);
     }
 }

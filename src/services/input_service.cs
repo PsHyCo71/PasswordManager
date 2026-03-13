@@ -1,5 +1,4 @@
-using System;
-using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using PasswordManager.Db;
 using PasswordManager.Interface;
 namespace PasswordManager.Services;
@@ -12,7 +11,7 @@ public class InputService
         while (true)
         {
             string? mod = Console.ReadLine();
-            if (!int.TryParse(mod, out Id_parsed) || Id_parsed < 1 || Id_parsed > 6)
+            if (!int.TryParse(mod, out Id_parsed) || Id_parsed < 1 || Id_parsed > 7)
             {
                 Console.WriteLine($"Error: please enter a valid number between 1 and 6.");
                 continue;
@@ -25,14 +24,15 @@ public class InputService
         return Id_parsed;
     }
 
-    public static string GetQuery()
+    public static string GetQuery(string text)
     {
         string query;
+        Console.Write($"{text}");
         string? query_nullable = Console.ReadLine();
         if (string.IsNullOrEmpty(query_nullable))
         {
             Console.WriteLine("Error: query cannot be empty.");
-            return GetQuery();
+            return GetQuery(text);
         }
         else
         {
@@ -46,7 +46,7 @@ public class InputService
         int Id_parsed = 0;
         while (true)
         {
-            Console.Write("Insert the paassword Id: ");
+            Console.Write("Insert the password Id: ");
             string? Id = Console.ReadLine();
             if (!int.TryParse(Id, out Id_parsed) || Id_parsed < 1)
             {
@@ -86,11 +86,11 @@ public class InputService
             break;
         }
 
-        Console.Write("Insert a URL: ");
-        string url = GetQuery();
+        string URL_string = "Insert a URL: ";
+        string url = GetQuery(URL_string);
 
-        Console.Write("Insert a password: ");
-        string pw = GetQuery();
+        string pw_string = "Insert a password: ";
+        string pw = GetQuery(pw_string);
 
         return new DbInterface
         {
@@ -101,31 +101,39 @@ public class InputService
         };
     }
 
-    public static void SetMasterKey()
-    {
-        string password = MasterPassword.SetMasterPassword();
-        byte[] salt = MasterPasswordEncryption.GenerateSalt();
-        byte[] hash = MasterPasswordEncryption.DeriveKey(password, salt);
-        DbRepository.SaveMasterKey(salt, hash);
-    }
-
     public static string AskMasterPassword()
     {
-        Console.Write($"Enter master password: ");
-        string password = "";
+        StringBuilder password = new StringBuilder();
 
         while (true)
         {
             var key = Console.ReadKey(true);
 
             if (key.Key == ConsoleKey.Enter)
+            {
                 break;
+            }
 
-            password += key.KeyChar;
+            if (key.Key == ConsoleKey.Backspace)
+            {
+                if (password.Length > 0)
+                {
+                    password.Remove(password.Length - 1, 1);
+                    Console.Write("\b \b");
+                }
+                continue;
+            }
+
+            if (char.IsControl(key.KeyChar))
+            {
+                continue;
+            }
+
+            password.Append(key.KeyChar);
             Console.Write("*");
         }
 
         Console.WriteLine();
-        return password;
+        return password.ToString();
     }
 }

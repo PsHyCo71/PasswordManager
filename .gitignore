@@ -3,3 +3,4 @@ bin/
 obj/
 # user-specific files
 passwords.db
+MasterKey.db

@@ -1,23 +1,24 @@
-using System;
-using System;
+using PasswordManager.Core;
 using PasswordManager.Db;
 using PasswordManager.Interface;
-using PasswordManager.Services;
 namespace PasswordManager.Services;
 
 public class Cli
 {
     public static void Startup()
     {
+        Console.WriteLine();
         Console.Write($"==== PASSWORD MANAGER ==== \n" +
                             "1. Add password \n" +
                             "2. Update password \n" +
                             "3. Delete password \n" +
-                            "4. Search password \n" +
-                            "5. Show all passwords \n" +
-                            "6. Exit \n" +
+                            "4. Delete all passwords \n" +
+                            "5. Search password \n" +
+                            "6. Show all passwords \n" +
+                            "7. Exit \n" +
                             "Select option: ");
         int mod = InputService.GetMode();
+        Console.WriteLine();
         ModeSelection(mod);
     }
 
@@ -27,19 +28,75 @@ public class Cli
         {
             case 1:
                 DbInterface passwordData = InputService.GetPassword();
-                DbRepository.InsertPassword(passwordData.Username, passwordData.Email, passwordData.URL, passwordData.Password);
+                DbCrypto.CryptoService(conn =>
+                {
+                    DbRepository.InsertPassword(conn, passwordData.Username, passwordData.Email, passwordData.URL, passwordData.Password);
+                });
                 Console.WriteLine("Password added succesfully.");
                 break;
             case 2:
                 DbInterface id = InputService.GetId();
                 DbInterface newPasswordData = InputService.GetPassword();
-                DbRepository.UpdatePassword(id.Id, newPasswordData.Username, newPasswordData.Email, newPasswordData.URL, newPasswordData.Password);
+                DbCrypto.CryptoService(conn =>
+                {
+                    DbRepository.UpdatePassword(conn, id.Id, newPasswordData.Username, newPasswordData.Email, newPasswordData.URL, newPasswordData.Password);
+                });
                 Console.WriteLine("Password updated succesfully.");
                 break;
+            case 3:
+                DbInterface id_2 = InputService.GetId();
+                DbCrypto.CryptoService(conn =>
+                {
+                    DbRepository.DeletePassword(conn, id_2.Id);
+                });
+                Console.WriteLine($"Password deleted succesfully.");
+                break;
+            case 4:
+                DbCrypto.CryptoService(conn =>
+                {
+                    DbRepository.DeleteAllPassword(conn);
+                });
+                Console.WriteLine($"All passwords deleted succesfully.");
+                break;
+            case 5:
+                List<DbInterface> results_1 = new List<DbInterface>();
+                string query_string = "Enter a word to search the password: ";
+                string search = InputService.GetQuery(query_string);
+                DbCrypto.CryptoService(conn =>
+                {
+                    DbRepository.SelectPassword(conn, search, results_1);
+                });
+                foreach (var entry in results_1)
+                {
+                    Console.WriteLine($"Id: {entry.Id}");
+                    Console.WriteLine($"Username: {entry.Username}");
+                    Console.WriteLine($"Email: {entry.Email}");
+                    Console.WriteLine($"URL: {entry.URL}");
+                    Console.WriteLine($"Password: {entry.Password}");
+                    Console.WriteLine("----------------------");
+                }
+                break;
             case 6:
+                List<DbInterface> results_2 = new List<DbInterface>();
+                DbCrypto.CryptoService(conn =>
+                {
+                    DbRepository.SelectAllPassword(conn, results_2);
+                });
+                foreach (var entry in results_2)
+                {
+                    Console.WriteLine($"Id: {entry.Id}");
+                    Console.WriteLine($"Username: {entry.Username}");
+                    Console.WriteLine($"Email: {entry.Email}");
+                    Console.WriteLine($"URL: {entry.URL}");
+                    Console.WriteLine($"Password: {entry.Password}");
+                    Console.WriteLine("----------------------");
+                }
+                break;
+            case 7:
+                Program.connectionPw!.Close();
+                Console.WriteLine($"Exiting program...");
                 Environment.Exit(0);
                 break;
-                
         }
     }
 }

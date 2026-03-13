@@ -1,16 +1,19 @@
-using System;
 using Microsoft.Data.Sqlite;
-using PasswordManager.Db;
 using PasswordManager.Services;
 namespace PasswordManager.Core;
 public class Program
 {
-    public static SqliteConnection? connection;
+    public static SqliteConnection? connectionPw;
     public static void Main()
     {
-        connection = new SqliteConnection("Data Source=src/db/passwords.db");
-        connection.Open();
+        SQLitePCL.Batteries_V2.Init();
+
+        connectionPw = new SqliteConnection("Data Source=src/db/MasterKey.db");
+        connectionPw.Open();
         MasterPassword.CheckFirstBoot();
-        Cli.Startup();
+        while (true)
+        {
+            Cli.Startup();
+        }
     }
 }
